@@ -12,6 +12,8 @@
 """
 
 import numpy as np
+import random
+from gd import gradient_descent_update
 from miniflow import (
                       Input,
                       Add,
@@ -136,6 +138,38 @@ def mse():
     23.4166666667
     """
     print(cost.value)
+
+
+def gradient_descent():
+
+    def f(x):
+        """
+        Quadratic function.
+
+        It's easy to see the minimum value of the function
+        is 5 when is x=0.
+        """
+        return x**2 + 5
+
+
+    def df(x):
+        """
+        Derivative of `f` with respect to `x`.
+        """
+        return 2*x
+
+
+    # Random number between 0 and 10,000. Feel free to set x whatever you like.
+    x = random.randint(0, 10000)
+    # TODO: Set the learning rate
+    learning_rate = None
+    epochs = 100
+
+    for i in range(epochs+1):
+        cost = f(x)
+        gradx = df(x)
+        print("EPOCH {}: Cost = {:.3f}, x = {:.3f}".format(i, cost, gradx))
+        x = gradient_descent_update(x, gradx, learning_rate)
 
 
 if __name__ == "__main__":
