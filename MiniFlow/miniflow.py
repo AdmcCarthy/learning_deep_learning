@@ -55,3 +55,12 @@ class Input(Node):
         # Overwrite the value if one is passed in.
         if value is not None:
             self.value = value
+
+class Add(Node):
+    def __init__(self, x, y):
+        Node.__init__(self, [x, y])
+
+    def forward(self):
+        """
+        This
+        """
