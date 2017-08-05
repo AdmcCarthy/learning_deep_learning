@@ -18,7 +18,8 @@ from miniflow import (
                       topological_sort,
                       forward_pass,
                       Linear,
-                      Sigmoid
+                      Sigmoid,
+                      MSE
                       )
 
 
@@ -138,4 +139,4 @@ def mse():
 
 
 if __name__ == "__main__":
-    sigmoid_test()
+    mse()
