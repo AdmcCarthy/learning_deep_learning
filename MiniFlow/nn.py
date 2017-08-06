@@ -12,50 +12,7 @@
 """
 
 import numpy as np
-import random
-from gd import gradient_descent_update
-from miniflow import (
-                      Input,
-                      Add,
-                      topological_sort,
-                      forward_pass,
-                      Linear,
-                      Sigmoid,
-                      MSE
-                      )
-
-
-def addition_2():
-    # Define 2 `Input` nodes.
-    x, y = Input(), Input()
-
-    # Define an `Add` node, the two above `Input` nodes being the input.
-    f = Add(x, y)
-
-    # The value of `x` and `y` will be set to 10 and 20 respectively.
-    feed_dict = {x: 10, y: 20}
-
-    # Sort the nodes with topological sort.
-    sorted_nodes = topological_sort(feed_dict=feed_dict)
-    output = forward_pass(f, sorted_nodes)
-
-    # NOTE: because topological_sort set the values for the `Input` nodes we could also access
-    # the value for x with x.value (same goes for y).
-    print("{} + {} = {} (according to miniflow)".format(feed_dict[x], feed_dict[y], output))
-
-
-def addition_3():
-    x, y, z = Input(), Input(), Input()
-
-    f = Add(x, y, z)
-
-    feed_dict = {x: 4, y: 5, z: 10}
-
-    graph = topological_sort(feed_dict)
-    output = forward_pass(f, graph)
-
-    # should output 19
-    print("{} + {} + {} = {} (according to miniflow)".format(feed_dict[x], feed_dict[y], feed_dict[z], output))
+from miniflow import *
 
 
 def linear():
@@ -140,37 +97,40 @@ def mse():
     print(cost.value)
 
 
-def gradient_descent():
+def back_prop():
+    X, W, b = Input(), Input(), Input()
+    y = Input()
+    f = Linear(X, W, b)
+    a = Sigmoid(f)
+    cost = MSE(y, a)
 
-    def f(x):
-        """
-        Quadratic function.
+    X_ = np.array([[-1., -2.], [-1, -2]])
+    W_ = np.array([[2.], [3.]])
+    b_ = np.array([-3.])
+    y_ = np.array([1, 2])
 
-        It's easy to see the minimum value of the function
-        is 5 when is x=0.
-        """
-        return x**2 + 5
+    feed_dict = {
+        X: X_,
+        y: y_,
+        W: W_,
+        b: b_,
+    }
 
+    graph = topological_sort(feed_dict)
+    forward_and_backward(graph)
+    # return the gradients for each Input
+    gradients = [t.gradients[t] for t in [X, y, W, b]]
 
-    def df(x):
-        """
-        Derivative of `f` with respect to `x`.
-        """
-        return 2*x
+    """
+    Expected output
 
-
-    # Random number between 0 and 10,000. Feel free to set x whatever you like.
-    x = random.randint(0, 10000)
-    # TODO: Set the learning rate
-    learning_rate = None
-    epochs = 100
-
-    for i in range(epochs+1):
-        cost = f(x)
-        gradx = df(x)
-        print("EPOCH {}: Cost = {:.3f}, x = {:.3f}".format(i, cost, gradx))
-        x = gradient_descent_update(x, gradx, learning_rate)
+    [array([[ -3.34017280e-05,  -5.01025919e-05],
+        [ -6.68040138e-05,  -1.00206021e-04]]), array([[ 0.9999833],
+        [ 1.9999833]]), array([[  5.01028709e-05],
+        [  1.00205742e-04]]), array([ -5.01028709e-05])]
+    """
+    print(gradients)
 
 
 if __name__ == "__main__":
-    mse()
+    back_prop()
